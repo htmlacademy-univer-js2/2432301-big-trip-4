@@ -1,20 +1,30 @@
-import EditingFormView from '../view/editing-form-view.js';
-import SortingView from '../view/sorting-view.js';
 import TripListView from '../view/trip-list-view.js';
+import CurrentFormView from '../view/current-form-view.js';
+import SortingView from '../view/sorting-view.js';
 import TripPointView from '../view/trip-point-view.js';
 import { render } from '../render.js';
 
 export default class Presenter {
-  init (eventsContainer) {
-    this.tripEventsContainer = eventsContainer;
-    render(new TripListView(), this.tripEventsContainer);
-    render(new SortingView(), this.tripEventsContainer);
+  sortFormView = new SortingView();
+  tripListView = new TripListView();
 
-    const eventsList = eventsContainer.querySelector('.trip-events__list');
-    render(new EditingFormView(), eventsList);
+  constructor ({container, pointModel}) {
+    this.container = container;
+    this.pointModel = pointModel;
+  }
 
-    for (let i = 0; i < 3; i++) {
-      render(new TripPointView, eventsList);
+  init() {
+    this.points = [...this.pointModel.getPoints()];
+    this.currentPoint = this.pointModel.getPoint();
+
+    render(this.sortFormView, this.container);
+    render(this.tripListView, this.container);
+
+    render(new CurrentFormView({point: this.currentPoint}), this.tripListView.getElement());
+
+    for (let i = 0; i < this.points.length; i++) {
+      render(new TripPointView({data: this.points[i]}), this.tripListView.getElement());
     }
   }
 }
+
