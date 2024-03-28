@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {getDuration, getMonthAndDate, getTime} from '../utils.js';
 
 const isFavorite = (check) => check ? 'event__favorite-btn--active' : '';
@@ -42,23 +42,15 @@ const createTripPointTemplate = (point) =>
     </div>
   </li>`;
 
-export default class TripPointView {
+export default class TripPointView extends AbstractView{
+  #point = null;
+
   constructor ({data}) {
-    this.point = data;
+    super();
+    this.#point = data;
   }
 
-  getTemplate() {
-    return createTripPointTemplate(this.point);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createTripPointTemplate(this.#point);
   }
 }
