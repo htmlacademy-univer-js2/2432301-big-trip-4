@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {POINT_TYPES, DESTINATIONS, OFFERS, IMAGES} from '../mock/offer-point-town.js';
 import { getRandomValue, getFullDate } from '../utils.js';
 
@@ -93,24 +93,23 @@ const createCurrentFormTemplate = (point) =>
   </li>
 `;
 
-export default class CurrentFormView {
+export default class CurrentFormView extends AbstractView{
+  #point = null;
+  #handleSubmit = null;
 
-  constructor ({point}) {
-    this.point = point;
+  constructor ({data, onSubmit}) {
+    super();
+    this.#point = data;
+    this.#handleSubmit = onSubmit;
+    this.element.querySelector('form').addEventListener('submit', this.#submitHandler);
   }
 
-  getTemplate() {
-    return createCurrentFormTemplate(this.point);
+  get template() {
+    return createCurrentFormTemplate(this.#point);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #submitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleSubmit();
+  };
 }

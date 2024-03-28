@@ -5,13 +5,13 @@ import TownModel from '../model/town-model.js';
 import OfferModel from '../model/offer-model.js';
 
 export default class PointModel {
-  townModel = new TownModel();
-  towns = this.townModel.getTowns();
+  #townModel = new TownModel();
+  #towns = this.#townModel.getTowns();
 
   points = Array.from({length: POINTS_COUNT}, () => {
     const offerModel = new OfferModel(getRandomValue(0, OFFERS.length));
     const offers = offerModel.getOffers();
-    const town = getRandomArrayElement(this.towns);
+    const town = getRandomArrayElement(this.#towns);
     const point = (getRandomPoint(town, offers));
     return point;
   });
