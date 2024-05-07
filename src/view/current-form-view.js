@@ -3,16 +3,6 @@ import {POINT_TYPES} from '../mock/offer-point-town.js';
 import { getDateTime } from '../utils.js';
 import { doCapitalizeString } from '../utils.js';
 
-const isChecked = (offers, offerId) => {
-  let check = false;
-  offers.forEach((offer) => {
-    if (offer.id === offerId) {
-      check = true;
-    }
-  });
-  return check ? 'checked' : '';
-};
-
 const createCurrentFormTemplate = (point, destinations, offers) =>
   `<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -39,7 +29,7 @@ const createCurrentFormTemplate = (point, destinations, offers) =>
           <label class="event__label  event__type-output" for="event-destination-${point.destinationId}">
             ${point.type}
           </label>
-          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinations[point.destinationId].name}" list="destination-list-1">
+          <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination-${point.destinationId}" value="${destinations[point.destinationId].name}" list="destination-list-1">
           <datalist id="destination-list-1">
             ${destinations.map((town) => `<option value="${town.name}"></option>`).join('')};
           </datalist>
@@ -72,14 +62,16 @@ const createCurrentFormTemplate = (point, destinations, offers) =>
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-          ${offers.find((offer) => offer.type === point.type).offers.map((offer) => `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-${offer.title.toLowerCase()}" ${isChecked(point.offerId, offer.id)}>
-          <label class="event__offer-label" for="event-offer-${offer.title.toLowerCase()}-1">
-            <span class="event__offer-title">${offer.title}</span>
-            &plus;&euro;&nbsp;
-            <span class="event__offer-price">${offer.price}</span>
-          </label>
-          </div>`).join('')};
+          ${offers.find((offer) => offer.type === point.type).offers.map((offer) => {
+    const checked = point.offerIds.includes(offer.id) ? 'checked' : '';
+    return `<div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-luggage" ${checked}>
+      <label class="event__offer-label" for="event-offer-${offer.id}">
+          <span class="event__offer-title">${offer.title}</span>
+          &plus;&euro;&nbsp;
+          <span class="event__offer-price">${offer.price}</span>
+        </label>
+      </div>`;}).join('')}
           </div>
 
         <section class="event__section  event__section--destination">
@@ -142,7 +134,7 @@ export default class CurrentFormView extends AbstractStatefulView{
 
   #pointDestinationChangeHandler = (evt) => {
     evt.preventDefault();
-    const destination = this._state.destination.filter((dest) => dest.name === evt.target.value);
+    const destination = this.#destinations.filter((dest) => dest.name === evt.target.value);
     this.updateElement({
       destinationId: destination[0].id,
     });

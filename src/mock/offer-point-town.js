@@ -21,8 +21,6 @@ const IMAGE_URL = 'https://loremflickr.com/248/152?random=';
 
 const generateOffer = (id, pointType) => ({
   'id': id,
-  // 'type': getRandomArrayElement(POINT_TYPES),
-  // 'title': getRandomArrayElement(OFFERS),
   'title': `offer for ${pointType}`,
   'price': getRandomValue()
 });
@@ -36,7 +34,7 @@ const getRandomOffer = () => Array.from({length: POINT_TYPES.length}).map((value
 
 const generateTown = (id) => ({
   'id': id,
-  'name': getRandomArrayElement(DESTINATIONS),
+  'name': DESTINATIONS[id],
   'photos': Array.from({length: IMAGE_COUNT}, () => `${IMAGE_URL}${getRandomValue()}`),
   'description': getRandomArrayElement(DESCRIPTIONS).repeat(getRandomValue(ElementsCount.MIN, ElementsCount.MAX))
 });
@@ -53,7 +51,7 @@ const generatePoint = () => {
     'dateTo': getTempDate({flag: true}),
     'destinationId': getRandomArrayElement(getRandomTown()).id,
     'isFavorite': getRandomArrayElement([0, 1]),
-    'offerId': Array.from({length: getRandomValue(0, allOfferIdsByTypePoint.length)}).map(() => allOfferIdsByTypePoint[getRandomValue(0, allOfferIdsByTypePoint.length - 1)]),
+    'offerIds': Array.from({length: getRandomValue(0, allOfferIdsByTypePoint.length)}).map(() => allOfferIdsByTypePoint[getRandomValue(0, allOfferIdsByTypePoint.length - 1)]),
     'type': offersByTypePoint.type
   };
 };

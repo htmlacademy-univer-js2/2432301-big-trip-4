@@ -22,11 +22,14 @@ const createTripPointTemplate = (point, destinations, offers) =>
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${offers.find((offer) => offer.type === point.type).offers.map((offer) => `<li class="event__offer">
+        ${offers.find((offer) => offer.type === point.type).offers.map((offer) => {
+    if (point.offerIds.includes(offer.id)) {
+      return `<li class="event__offer">
           <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${offer.price}</span>
-        </li>`).join('')}
+        </li>`;
+    }}).join('')}
       </ul>
       <button class="event__favorite-btn ${point.isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
         <span class="visually-hidden">Add to favorite</span>

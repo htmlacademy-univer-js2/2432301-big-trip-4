@@ -89,7 +89,7 @@ export default class PointPresenter {
   };
 
   #escKeyDownHandler = (evt) => {
-    if (isEscapeButton) {
+    if (isEscapeButton(evt)) {
       evt.preventDefault();
       this.#editingPointComponent.reset(this.#point);
       this.#replaceEditingPointToPreviewPoint();

@@ -49,13 +49,13 @@ export default class Presenter {
 
   #sortPoint = (sortType) => {
     switch (sortType) {
-      case SortType[0].type:
+      case SortType[0].type: // day
         this.#points.sort(sortDayPoint);
         break;
-      case SortType[2].type:
+      case SortType[2].type: //time
         this.#points.sort(sortTimePoint);
         break;
-      case SortType[3].type:
+      case SortType[3].type: //price
         this.#points.sort(sortPricePoint);
         break;
     }
