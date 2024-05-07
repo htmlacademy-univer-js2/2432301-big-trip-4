@@ -1,14 +1,14 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import {getDuration, humanizePointDueDate, getTime} from '../utils.js';
 
-const createTripPointTemplate = (point) =>
+const createTripPointTemplate = (point, destinations, offers) =>
   `li class="trip-events__item">
     <div class="event">
       <time class="event__date" datetime=${point.dateFrom}>${humanizePointDueDate(point.dateFrom)}</time>
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="img/icons/${point.type.toLowerCase()}.png" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="img/icons/${point.type.toLowerCase()}.png" alt="Event ${point.type} icon">
       </div>
-      <h3 class="event__title">${point.type} ${point.destination.name}</h3>
+      <h3 class="event__title">${point.type} ${destinations[point.destinationId].name}</h3>
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="${point.dateFrom}">${getTime(point.dateFrom)}</time>
@@ -22,7 +22,7 @@ const createTripPointTemplate = (point) =>
       </p>
       <h4 class="visually-hidden">Offers:</h4>
       <ul class="event__selected-offers">
-        ${point.offers.map((offer) => `<li class="event__offer">
+        ${offers.find((offer) => offer.type === point.type).offers.map((offer) => `<li class="event__offer">
           <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
           <span class="event__offer-price">${offer.price}</span>
@@ -41,14 +41,18 @@ const createTripPointTemplate = (point) =>
 
 export default class TripPointView extends AbstractView{
   #point = null;
+  #destination = null;
+  #offers = null;
 
-  constructor (data) {
+  constructor (point, destination, offers) {
     super();
-    this.#point = data;
+    this.#point = point;
+    this.#destination = destination;
+    this.#offers = offers;
   }
 
   get template() {
-    return createTripPointTemplate(this.#point);
+    return createTripPointTemplate(this.#point, this.#destination, this.#offers);
   }
 
   setEditClickHandler = (callback) => {

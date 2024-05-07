@@ -4,7 +4,6 @@ import { RenderPosition, render } from '../framework/render.js';
 import EmptyListView from '../view/empty-list-view.js';
 import PointPresenter from './point-presenter.js';
 import { updateItem } from '../utils.js';
-import TripInfoView from '../view/trip-info-view.js';
 import { SORTING_COLUMNS as SortType } from '../const.js';
 import { sortPricePoint, sortDayPoint, sortTimePoint } from '../utils.js';
 
@@ -13,7 +12,7 @@ export default class Presenter {
   #sortFormView = new SortingView();
   #tripListView = new TripListView();
   #emptyListView = new EmptyListView();
-  #tripInfoView = new TripInfoView();
+  // #tripInfoView = new TripInfoView();
   #container = null;
   #pointModel = null;
   #points = [];
@@ -28,13 +27,12 @@ export default class Presenter {
 
   init() {
     this.#points = [...this.#pointModel.points];
-    this.#sourcedBoardPoints = [...this.#points];
+    this.#sourcedBoardPoints = [...this.#pointModel.points];
     if (this.#points.length === 0) {
       this.#renderNoPoints();
     }
     else {
       this.#renderSort();
-      render(this.#tripInfoView, document.querySelector('.trip-main'), RenderPosition.AFTERBEGIN);
       this.#renderPointList();
     }
   }
@@ -82,7 +80,7 @@ export default class Presenter {
   };
 
   #renderPoint = (point) => {
-    const pointPresenter = new PointPresenter(this.#tripListView.element, this.#handlePointChange, this.#handleModeChange);
+    const pointPresenter = new PointPresenter(this.#tripListView.element, this.#pointModel, this.#handlePointChange, this.#handleModeChange);
     pointPresenter.init(point);
     this.#pointPresenter.set(point.id, pointPresenter);
   };
