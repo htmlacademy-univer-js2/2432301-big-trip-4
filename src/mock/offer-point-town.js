@@ -56,7 +56,7 @@ const generatePoint = () => {
   };
 };
 
-const getRandomPoint = () => Array.from({length: POINTS_COUNT}).map(() => generatePoint()).sort();
+const getRandomPoint = () => Array.from({length: POINTS_COUNT}).map(() => generatePoint());
 
 export {getRandomOffer, getRandomPoint, getRandomTown,
   POINTS_COUNT, IMAGE_COUNT, POINT_TYPES, DESTINATIONS, OFFERS, IMAGE_URL};

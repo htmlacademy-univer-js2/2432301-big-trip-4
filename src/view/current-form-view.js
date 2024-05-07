@@ -1,7 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {POINT_TYPES} from '../mock/offer-point-town.js';
 import { getDateTime } from '../utils.js';
-import { doCapitalizeString } from '../utils.js';
+import { capitalizeString } from '../utils.js';
 
 const createCurrentFormTemplate = (point, destinations, offers) =>
   `<li class="trip-events__item">
@@ -19,7 +19,7 @@ const createCurrentFormTemplate = (point, destinations, offers) =>
               <legend class="visually-hidden">Event type</legend>
               ${POINT_TYPES.map((type) => `<div class="event__type-item">
               <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${point.type === type ? 'checked' : ''}>
-              <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${doCapitalizeString(type)}</label>
+              <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalizeString(type)}</label>
               </div>`).join('')}
             </fieldset>
           </div>
