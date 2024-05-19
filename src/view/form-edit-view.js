@@ -1,7 +1,10 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {POINT_TYPES} from '../mock/offer-point-town.js';
+import { POINT_TYPES } from '../const.js';
 import { getDateTime } from '../utils.js';
 import { capitalizeString } from '../utils.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import dayjs from 'dayjs';
 
 const createCurrentFormTemplate = (point, destinations, offers) =>
   `<li class="trip-events__item">
@@ -89,21 +92,75 @@ const createCurrentFormTemplate = (point, destinations, offers) =>
   </li>
 `;
 
-export default class CurrentFormView extends AbstractStatefulView{
+export default class FormEditView extends AbstractStatefulView{
   #destinations = null;
   #offers = null;
+  #datepicker = null;
 
   constructor (point, destinations, offers) {
     super();
-    this._state = CurrentFormView.parsePointToState(point);
+    this._state = this.parsePointToState(point);
     this.#destinations = destinations;
     this.#offers = offers;
     this.#setInnerHandlers();
+    this.#setDatepickerFrom();
+    this.#setDatepickerTo();
   }
 
   get template() {
     return createCurrentFormTemplate(this._state, this.#destinations, this.#offers);
   }
+
+  _restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setPreviewClickHandler(this._callback.previewClick);
+    this.#setDatepickerFrom();
+    this.#setDatepickerTo();
+  };
+
+  #pointDateFromChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateFrom: userDate,
+    });
+  };
+
+  #pointDateToChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateTo: userDate,
+    });
+  };
+
+  #pointPriceChangeHandler = (evt) => {
+    evt.preventDefault();
+    this._setState({
+      basePrice: evt.target.value,
+    });
+  };
+
+  #setDatepickerFrom = () => {
+    this.#datepicker = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        maxDate: this._state.dateTo,
+        dateFormat: 'd/m/y H:i',
+        onChange: this.#pointDateFromChangeHandler,
+      },
+    );
+  };
+
+  #setDatepickerTo = () => {
+    this.#datepicker = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        enableTime: true,
+        minDate: this._state.dateFrom,
+        dateFormat: 'd/m/y H:i',
+        onChange: this.#pointDateToChangeHandler,
+      },
+    );
+  };
 
   setPreviewClickHandler = (callback) => {
     this._callback.previewClick = callback;
@@ -115,21 +172,9 @@ export default class CurrentFormView extends AbstractStatefulView{
     this._callback.previewClick();
   };
 
-  reset = (point) => {
-    this.updateElement(
-      CurrentFormView.parsePointToState(point),
-    );
-  };
-
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.querySelector('.event__save-btn').addEventListener('click', this.#formSubmitHandler);
-  };
-
-  _restoreHandlers = () => {
-    this.#setInnerHandlers();
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setPreviewClickHandler(this._callback.previewClick);
   };
 
   #pointDestinationChangeHandler = (evt) => {
@@ -163,19 +208,28 @@ export default class CurrentFormView extends AbstractStatefulView{
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(CurrentFormView.parseStateToPoint(this._state));
+    this._callback.formSubmit(this.parseStateToPoint(this._state));
   };
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-list').addEventListener('change', this.#pointTypeChangeHandler);
     this.element.querySelector('.event__input').addEventListener('change', this.#pointDestinationChangeHandler);
     this.element.querySelector('.event__available-offers').addEventListener('change', this.#offersChangeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#pointPriceChangeHandler);
   };
 
-  static parsePointToState = (point) => ({...point});
+  parsePointToState = (point) => ({...point,
+    dateTo: dayjs(point.dateTo).toDate(),
+    dateFrom: dayjs(point.dateFrom).toDate()});
 
-  static parseStateToPoint = (state) => {
+  parseStateToPoint = (state) => {
     const point = {...state};
     return point;
+  };
+
+  reset = (point) => {
+    this.updateElement(
+      this.parsePointToState(point),
+    );
   };
 }
