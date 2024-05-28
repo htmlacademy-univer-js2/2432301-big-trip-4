@@ -40,13 +40,13 @@ export default class BoardPresenter {
     this.#destinationModel.addObserver(this.#modelDataChangeHandler);
   }
 
-  init() {
-    this.#renderBoard();
-  }
-
   get points() {
     const filteredPoints = filter[this.#filterModel.filterType]([...this.#pointModel.points]);
     return sortPoints[this.#currentSortType](filteredPoints);
+  }
+
+  init() {
+    this.#renderBoard();
   }
 
   createPoint(destroyCallback) {
